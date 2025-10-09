@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <title>246games</title>
+    <link href="https://fonts.googleapis.com/css?family=Montserrat:700|Roboto:400,500&display=swap" rel="stylesheet" />
+    <style>
+        body {
+          background: #14283c;
+          font-family: 'Roboto', sans-serif;
+          margin: 0;
+          color: #fff;
+        }
+        nav {
+          background: #2F4F4F;
+          padding: 12px 20px;
+          display: flex;
+          gap: 20px;
+          font-family: 'Montserrat', sans-serif;
+          font-weight: 700;
+        }
+        nav a {
+          color: #FFD700;
+          text-decoration: none;
+          padding: 8px 14px;
+          border-radius: 8px;
+          transition: background 0.2s, color 0.2s;
+          cursor: pointer;
+        }
+        nav a:hover, nav a.active {
+          background: #32CD32;
+          color: #222;
+        }
+        .container {
+          max-width: 1200px;
+          margin: auto;
+          padding: 40px 20px;
+        }
+        h1 {
+          font-family: 'Montserrat', sans-serif;
+          text-align: center;
+          margin-bottom: 10px;
+        }
+        .search-bar {
+          text-align: center;
+          margin-bottom: 25px;
+        }
+        input[type='text'] {
+          width: 300px;
+          padding: 10px;
+          font-size: 1.1em;
+          border: none;
+          border-radius: 4px;
+          outline: none;
+        }
+        .categories {
+          display: flex;
+          gap: 16px;
+          justify-content: center;
+          margin-bottom: 30px;
+          flex-wrap: wrap;
+        }
+        .category {
+          background: #2F4F4F;
+          padding: 10px 22px;
+          border-radius: 16px;
+          font-weight: 500;
+          cursor: pointer;
+          transition: background 0.2s;
+          user-select: none;
+        }
+        .category:hover, .category.active {
+          background: #32CD32;
+          color: #222;
+        }
+        .games-grid {
+          display: grid;
+          grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+          gap: 24px;
+        }
+        .game-card {
+          background: #2F4F4F;
+          border-radius: 14px;
+          box-shadow: 0 4px 12px rgba(20,40,60,0.3);
+          padding: 18px;
+          text-align: center;
+          transition: transform 0.2s;
+        }
+        .game-card:hover {
+          transform: translateY(-4px) scale(1.03);
+          box-shadow: 0 8px 18px rgba(50,205,50,0.15);
+        }
+        .game-image {
+          width: 100px;
+          height: 100px;
+          object-fit: contain;
+          margin-bottom: 14px;
+          border-radius: 10px;
+          background: #fff;
+        }
+        .game-title {
+          font-family: 'Montserrat', sans-serif;
+          font-weight: 700;
+          color: #FFD700;
+          font-size: 1.1em;
+          margin-bottom: 4px;
+        }
+        .game-author {
+          color: #FF1493;
+          font-size: 0.92em;
+          margin-bottom: 10px;
+        }
+        .game-link {
+          background: #14283c;
+          color: #fff;
+          padding: 8px 20px;
+          border-radius: 8px;
+          text-decoration: none;
+          font-weight: bold;
+          transition: background 0.2s;
+          display: inline-block;
+        }
+        .game-link:hover {
+          background: #FFD700;
+          color: #222;
+        }
+    </style>
+</head>
+<body>
+<nav>
+    <a href="index.html" class="active">Home</a>
+</nav>
+<div class="container">
+    <h1>246games.com</h1>
+    <div class="search-bar">
+        <input type="text" id="searchInput" placeholder="Search games..." />
+    </div>
+    <div class="categories" id="categoryFilter">
+        <div class="category active" data-category="all">All</div>
+        <div class="category" data-category="arcade">Arcade</div>
+        <div class="category" data-category="puzzle">Puzzle</div>
+        <div class="category" data-category="action">Action</div>
+        <div class="category" data-category="card">Card</div>
+        <div class="category" data-category="strategy">Strategy</div>
+        <div class="category" data-category="adventure">Adventure</div>
+        <div class="category" data-category="sports">Sports</div>
+    </div>
+    <div class="games-grid" id="gamesGrid">
+        <!-- Planet Clicker -->
+        <div class="game-card" data-category="strategy" data-title="Planet Clicker">
+            <img src="Images/planetclickericon.png" alt="Planet Clicker Icon" class="game-image"/>
+            <div class="game-title">Planet Clicker</div>
+            <div class="game-author">by Obnoxious T</div>
+            <a class="game-link" href="../Planet%20Clicker/planet_clicker.html">Play Now</a>
+        </div>
+    </div>
+</div>
+
+<script>
+    const categories = document.querySelectorAll('.category');
+    const gamesGrid = document.getElementById('gamesGrid');
+    const games = gamesGrid.querySelectorAll('.game-card');
+    const searchInput = document.getElementById('searchInput');
+
+    function filterGames() {
+      const selectedCategory = document.querySelector('.category.active').dataset.category;
+      const searchTerm = searchInput.value.toLowerCase();
+
+      games.forEach(game => {
+        const gameCategory = game.dataset.category.toLowerCase();
+        const gameTitle = game.dataset.title.toLowerCase();
+
+        const categoryMatch = (selectedCategory === 'all') || (gameCategory === selectedCategory);
+        const searchMatch = gameTitle.includes(searchTerm);
+
+        if (categoryMatch && searchMatch) {
+          game.style.display = 'block';
+        } else {
+          game.style.display = 'none';
+        }
+      });
+    }
+
+    categories.forEach(category => {
+      category.addEventListener('click', () => {
+        categories.forEach(cat => cat.classList.remove('active'));
+        category.classList.add('active');
+        filterGames();
+      });
+    });
+
+    searchInput.addEventListener('input', filterGames);
+
+    filterGames();
+</script>
+</body>
+</html>

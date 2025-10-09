@@ -338,7 +338,7 @@
     #settingsBtn {
       position: fixed;
       top: 1rem;
-      left: 1rem;
+      left: 6rem;
       background-color: #1877ff;
       color: white;
       border: none;
@@ -359,7 +359,7 @@
     #settingsDropdown {
       position: fixed;
       top: 3.5rem;
-      left: 1rem;
+      left: 5rem;
       background-color: #111a2a;
       box-shadow: 0 0 1rem #0a2e6c;
       border-radius: 0.4rem;
@@ -386,6 +386,33 @@
       transition: background-color 0.2s ease;
     }
     #settingsDropdown button:hover {
+      background-color: #3ea0ff;
+    }
+
+    /* Home button */
+    #homeBtn {
+      position: fixed;
+      top: 1rem;
+      left: 1rem;
+      background-color: #1877ff;
+      color: white;
+      border: none;
+      outline: none;
+      border-radius: .4rem 0 0 .4rem;
+      font-weight: 700;
+      font-size: 1.2rem;
+      padding: 0.4rem 0.8rem;
+      cursor: pointer;
+      user-select: none;
+      z-index: 30;
+      transition: background-color 0.3s ease;
+      text-decoration: none;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-right: 40px;
+    }
+    #homeBtn:hover {
       background-color: #3ea0ff;
     }
 
@@ -439,58 +466,56 @@
 </head>
 <body>
 
-  <div class="dollars-counter" id="counter">Dollars: 0</div>
-  <div class="dollars-per-second" id="dpsCounter">Dollars per second: 0</div>
+<a href="../Index/index.html" id="homeBtn" aria-label="Home">Home</a>
+<button id="settingsBtn" aria-haspopup="true" aria-expanded="false" aria-controls="settingsDropdown" aria-label="Settings">Settings</button>
+<div id="settingsDropdown" role="menu" aria-label="Settings Menu">
+  <button id="resetGameBtn" role="menuitem">Reset Game</button>
+</div>
 
-  <button id="settingsBtn" aria-haspopup="true" aria-expanded="false" aria-controls="settingsDropdown" aria-label="Settings">Settings</button>
-  <div id="settingsDropdown" role="menu" aria-label="Settings Menu">
-    <button id="resetGameBtn" role="menuitem">Reset Game</button>
+<button id="shopToggleBtn" aria-expanded="false" aria-controls="shopSection" aria-label="Toggle Shop">Shop</button>
+
+<canvas class="stars"></canvas>
+
+<div id="leftArrowContainer" class="arrow-container" tabindex="0" aria-label="Previous Planet" role="button">
+  <div id="leftArrow" class="nav-arrow">
+    <svg viewBox="0 0 24 24">
+      <path d="M15.41 7.41L14 6l-6 6 6 6 1.41-1.41L10.83 12z"/>
+    </svg>
+  </div>
+</div>
+
+<div id="rightArrowContainer" class="arrow-container" tabindex="0" aria-label="Next Planet" role="button">
+  <div id="rightArrow" class="nav-arrow">
+    <svg viewBox="0 0 24 24">
+      <path d="M8.59 16.59L13.17 12 8.59 7.41 10 6l6 6-6 6z"/>
+    </svg>
+  </div>
+</div>
+
+<div class="main-content centered-earth" id="mainContent">
+  <div class="earth-section">
+    <div style="position:relative;width:100%;display:flex;justify-content:center;align-items:center;">
+      <button id="clickButton" tabindex="0" aria-hidden="true" style="z-index:1;">
+        <svg id="earthSVG" viewBox="0 0 140 140" xmlns="http://www.w3.org/2000/svg" role="img">
+          <circle cx="70" cy="70" r="68" fill="#2e85ff" stroke="#1a4c8b" stroke-width="2"/>
+          <ellipse cx="56" cy="83" rx="26" ry="14" fill="#56c271" opacity="0.98"/>
+          <ellipse cx="93" cy="59" rx="19" ry="10" fill="#70be75" opacity="0.87"/>
+          <ellipse cx="74" cy="48" rx="11" ry="6.5" fill="#6dc567" opacity="0.92"/>
+          <ellipse cx="100" cy="110" rx="13" ry="6" fill="#63aa6c" opacity="0.80"/>
+          <ellipse cx="70" cy="18" rx="19" ry="7" fill="#f5f5fa" opacity="0.62"/>
+          <ellipse cx="70" cy="123" rx="17" ry="6" fill="#f5f5fa" opacity="0.64"/>
+          <ellipse cx="40" cy="45" rx="15" ry="6" fill="#bbeeff" opacity="0.45"/>
+        </svg>
+      </button>
+      <div id="plusContainer" style="position:absolute;top:0;left:0;width:100%;pointer-events:none;z-index:10;"></div>
+    </div>
+    <div class="earth-label">Earth</div>
   </div>
 
-  <button id="shopToggleBtn" aria-expanded="false" aria-controls="shopSection" aria-label="Toggle Shop">Shop</button>
-
-  <canvas class="stars"></canvas>
-
-  <div id="leftArrowContainer" class="arrow-container" tabindex="0" aria-label="Previous Planet" role="button">
-    <div id="leftArrow" class="nav-arrow">
-      <svg viewBox="0 0 24 24">
-        <path d="M15.41 7.41L14 6l-6 6 6 6 1.41-1.41L10.83 12z"/>
-      </svg>
-    </div>
+  <div class="shop-section shop-closed" tabindex="-1" id="shopSection" aria-hidden="true">
+    <div class="shop-label">Shop</div>
   </div>
-
-  <div id="rightArrowContainer" class="arrow-container" tabindex="0" aria-label="Next Planet" role="button">
-    <div id="rightArrow" class="nav-arrow">
-      <svg viewBox="0 0 24 24">
-        <path d="M8.59 16.59L13.17 12 8.59 7.41 10 6l6 6-6 6z"/>
-      </svg>
-    </div>
-  </div>
-
-  <div class="main-content centered-earth" id="mainContent">
-    <div class="earth-section">
-      <div style="position:relative;width:100%;display:flex;justify-content:center;align-items:center;">
-        <button id="clickButton" tabindex="0" aria-hidden="true" style="z-index:1;">
-          <svg id="earthSVG" viewBox="0 0 140 140" xmlns="http://www.w3.org/2000/svg" role="img">
-            <circle cx="70" cy="70" r="68" fill="#2e85ff" stroke="#1a4c8b" stroke-width="2"/>
-            <ellipse cx="56" cy="83" rx="26" ry="14" fill="#56c271" opacity="0.98"/>
-            <ellipse cx="93" cy="59" rx="19" ry="10" fill="#70be75" opacity="0.87"/>
-            <ellipse cx="74" cy="48" rx="11" ry="6.5" fill="#6dc567" opacity="0.92"/>
-            <ellipse cx="100" cy="110" rx="13" ry="6" fill="#63aa6c" opacity="0.80"/>
-            <ellipse cx="70" cy="18" rx="19" ry="7" fill="#f5f5fa" opacity="0.62"/>
-            <ellipse cx="70" cy="123" rx="17" ry="6" fill="#f5f5fa" opacity="0.64"/>
-            <ellipse cx="40" cy="45" rx="15" ry="6" fill="#bbeeff" opacity="0.45"/>
-          </svg>
-        </button>
-        <div id="plusContainer" style="position:absolute;top:0;left:0;width:100%;pointer-events:none;z-index:10;"></div>
-      </div>
-      <div class="earth-label">Earth</div>
-    </div>
-
-    <div class="shop-section shop-closed" tabindex="-1" id="shopSection" aria-hidden="true">
-      <div class="shop-label">Shop</div>
-    </div>
-  </div>
+</div>
 
 <script>
   // Star background setup and animation
@@ -596,8 +621,6 @@
     { name: 'CEO Shark Tank', basePrice: 500000, clickMult: 10, count: 0, desc: "Click value ×10" },
     { name: 'Slaves', basePrice: 800000, clickMult: 15, count: 0, desc: "Click value ×15" },
     { name: 'Cocaine Dealership', basePrice: 1000000, dps: 10000, count: 0, desc: "+10,000 dollars per second" }
-    
-
   ];
 
   function getPrice(item) {
@@ -840,4 +863,3 @@
 
 </body>
 </html>
-
