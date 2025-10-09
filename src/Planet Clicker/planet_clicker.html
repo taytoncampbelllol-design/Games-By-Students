@@ -55,6 +55,43 @@
       padding-bottom: 0.5rem;
     }
 
+    #topButtonsContainer {
+  position: fixed;
+  top: 1rem;
+  left: 1rem; /* Push to left corner with a small gap */
+  display: flex;
+  gap: 0.4rem;
+  z-index: 30;
+  user-select: none;
+}
+
+    #topButtonsContainer a#homeBtn,
+    #topButtonsContainer button#settingsBtn {
+      background-color: #1877ff;
+      color: white;
+      border: none;
+      outline: none;
+      border-radius: 0 .4rem .4rem 0;
+      font-weight: 700;
+      font-size: 1.2rem;
+      padding: 0.4rem 0.8rem;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      text-decoration: none;
+    }
+
+    #topButtonsContainer a#homeBtn {
+      border-radius: .4rem 0 0 .4rem;
+    }
+
+    #topButtonsContainer a#homeBtn:hover,
+    #topButtonsContainer button#settingsBtn:hover {
+      background-color: #3ea0ff;
+    }
+
     .main-content {
       display: flex;
       flex-grow: 1;
@@ -334,32 +371,10 @@
       background-color: #3ea0ff;
     }
 
-    /* Settings button */
-    #settingsBtn {
-      position: fixed;
-      top: 1rem;
-      left: 6rem;
-      background-color: #1877ff;
-      color: white;
-      border: none;
-      outline: none;
-      border-radius: 0 .4rem .4rem 0;
-      font-weight: 700;
-      font-size: 1.2rem;
-      padding: 0.4rem 0.8rem;
-      cursor: pointer;
-      user-select: none;
-      z-index: 30;
-      transition: background-color 0.3s ease;
-    }
-    #settingsBtn:hover {
-      background-color: #3ea0ff;
-    }
-
     #settingsDropdown {
       position: fixed;
       top: 3.5rem;
-      left: 5rem;
+      left: 6rem;
       background-color: #111a2a;
       box-shadow: 0 0 1rem #0a2e6c;
       border-radius: 0.4rem;
@@ -386,33 +401,6 @@
       transition: background-color 0.2s ease;
     }
     #settingsDropdown button:hover {
-      background-color: #3ea0ff;
-    }
-
-    /* Home button */
-    #homeBtn {
-      position: fixed;
-      top: 1rem;
-      left: 1rem;
-      background-color: #1877ff;
-      color: white;
-      border: none;
-      outline: none;
-      border-radius: .4rem 0 0 .4rem;
-      font-weight: 700;
-      font-size: 1.2rem;
-      padding: 0.4rem 0.8rem;
-      cursor: pointer;
-      user-select: none;
-      z-index: 30;
-      transition: background-color 0.3s ease;
-      text-decoration: none;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      margin-right: 40px;
-    }
-    #homeBtn:hover {
       background-color: #3ea0ff;
     }
 
@@ -466,8 +454,14 @@
 </head>
 <body>
 
-<a href="../Index/index.html" id="homeBtn" aria-label="Home">Home</a>
-<button id="settingsBtn" aria-haspopup="true" aria-expanded="false" aria-controls="settingsDropdown" aria-label="Settings">Settings</button>
+<div id="topButtonsContainer">
+  <a href="../Index/index.html" id="homeBtn" aria-label="Home">Home</a>
+  <button id="settingsBtn" aria-haspopup="true" aria-expanded="false" aria-controls="settingsDropdown" aria-label="Settings">Settings</button>
+</div>
+
+<div class="dollars-counter" id="counter">Dollars: 0</div>
+<div class="dollars-per-second" id="dpsCounter">Dollars per second: 0</div>
+
 <div id="settingsDropdown" role="menu" aria-label="Settings Menu">
   <button id="resetGameBtn" role="menuitem">Reset Game</button>
 </div>
@@ -596,7 +590,7 @@
   const settingsDropdown = document.getElementById('settingsDropdown');
   const resetGameBtn = document.getElementById('resetGameBtn');
 
-  // Shop items ordered by ascending base price, including Nuclear Power Plant $5, clickMult 200
+  // Shop items ordered by ascending base price
   const shopItems = [
     { name: 'Lazy Cash Machine', basePrice: 50, dps: 1, count: 0, desc: "+1 dollar per second" },
     { name: 'Efficient Printer', basePrice: 300, dps: 3, count: 0, desc: "+3 dollars per second" },
