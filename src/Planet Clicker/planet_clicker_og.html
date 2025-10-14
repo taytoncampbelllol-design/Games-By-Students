@@ -1,0 +1,865 @@
+<!--
+This is if I screw up the other one and need this code (which I most likely will ;) )
+-->
+
+
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <title>Planet Clicker</title>
+    <style>
+        /* Add box-sizing globally to include padding in widths */
+        *, *::before, *::after {
+          box-sizing: border-box;
+        }
+
+        html {
+          font-size: 2.5vmin;
+        }
+
+        body {
+          margin: 0;
+          min-height: 100vh;
+          background: #000;
+          overflow: hidden;
+          font-family: Arial, sans-serif;
+          display: flex;
+          flex-direction: column;
+          color: #e0d56f;
+        }
+
+        .dollars-counter {
+          width: 100vw;
+          text-align: center;
+          position: fixed;
+          top: 1rem;
+          left: 0;
+          color: #e0d56f;
+          font-size: 2.5rem;
+          letter-spacing: 0.1rem;
+          z-index: 10;
+          font-weight: bold;
+          user-select: none;
+          padding: 0.8rem 0 0.5rem 0;
+          flex-shrink: 0;
+        }
+
+        .dollars-per-second {
+          width: 100vw;
+          text-align: center;
+          position: fixed;
+          top: 4rem;
+          left: 0;
+          color: #a3e7ff;
+          font-size: 1.2rem;
+          letter-spacing: 0.05rem;
+          z-index: 10;
+          font-weight: 600;
+          user-select: none;
+          padding-bottom: 0.5rem;
+        }
+
+        #topButtonsContainer {
+      position: fixed;
+      top: 1rem;
+      left: 1rem; /* Push to left corner with a small gap */
+      display: flex;
+      gap: 0.4rem;
+      z-index: 30;
+      user-select: none;
+    }
+
+        #topButtonsContainer a#homeBtn,
+        #topButtonsContainer button#settingsBtn {
+          background-color: #1877ff;
+          color: white;
+          border: none;
+          outline: none;
+          border-radius: 0 .4rem .4rem 0;
+          font-weight: 700;
+          font-size: 1.2rem;
+          padding: 0.4rem 0.8rem;
+          cursor: pointer;
+          transition: background-color 0.3s ease;
+          display: inline-flex;
+          align-items: center;
+          justify-content: center;
+          text-decoration: none;
+        }
+
+        #topButtonsContainer a#homeBtn {
+          border-radius: .4rem 0 0 .4rem;
+        }
+
+        #topButtonsContainer a#homeBtn:hover,
+        #topButtonsContainer button#settingsBtn:hover {
+          background-color: #3ea0ff;
+        }
+
+        .main-content {
+          display: flex;
+          flex-grow: 1;
+          height: calc(100vh - 5rem);
+          overflow: hidden;
+          margin-top: 5rem;
+          margin-left: 4.5rem;
+          margin-right: 4.5rem;
+          position: relative;
+          transition: margin-left 0.5s ease, margin-right 0.5s ease, padding 0.5s ease, width 0.5s ease;
+        }
+
+        /* Earth section centered when shop closed: shrink width to fit content and add horizontal padding plus margin */
+        .main-content.centered-earth {
+          margin-left: auto;
+          margin-right: auto;
+          width: fit-content; /* shrink to content's width */
+          padding-left: 3rem; /* enough padding so Earth won't clip */
+          padding-right: 3rem;
+        }
+
+        .earth-section {
+          flex: 2;
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          justify-content: center;
+          position: relative;
+          z-index: 2;
+          min-width: 0;
+          min-height: 0;
+          transition: flex 0.3s ease;
+        }
+
+        /* Fixed width earth-section when shop closed with margin to avoid clipping */
+        .main-content.centered-earth .earth-section {
+          flex: none;
+          width: 12rem;
+          margin-left: 20px;
+          margin-right: 20px;
+          min-width: 0;
+        }
+
+        .shop-section {
+          flex: 1;
+          background: #111a2a;
+          color: #62a7f7;
+          box-shadow: inset 0 0 3rem #0a2e6c;
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          justify-content: flex-start;
+          padding: 1rem 1rem;
+          font-size: 1.2rem;
+          font-weight: 700;
+          user-select: none;
+          position: relative;
+          z-index: 1;
+          overflow-y: auto;
+          border-radius: 0.4rem;
+          max-height: 100%;
+          transition: width 0.5s ease, opacity 0.5s ease;
+        }
+
+        /* Closed shop styles */
+        .shop-closed {
+          width: 0;
+          opacity: 0;
+          pointer-events: none;
+          padding: 0;
+          border: none;
+          box-shadow: none;
+        }
+
+        /* Shop label on top */
+        .shop-label {
+          width: 100%;
+          text-align: center;
+          font-size: 1.6rem;
+          font-weight: 700;
+          color: #62a7f7;
+          padding-bottom: 1rem;
+          user-select: none;
+          border-bottom: 1px solid #275aa8;
+          margin-bottom: 1rem;
+        }
+
+        .shop-item {
+          width: 100%;
+          background: #0c1f3f;
+          border: 1px solid #275aa8;
+          margin-bottom: 0.7rem;
+          padding: 0.6rem 0.8rem;
+          border-radius: 0.4rem;
+          display: flex;
+          flex-direction: column;
+          user-select: none;
+        }
+
+        .shop-item-name {
+          color: #87ccff;
+          font-weight: 700;
+          font-size: 1.15rem;
+        }
+
+        .shop-item-desc {
+          color: #aad8ff;
+          font-weight: 400;
+          font-size: 0.95rem;
+          margin: 0.2rem 0 0.6rem 0;
+        }
+
+        .shop-item-footer {
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+        }
+
+        .shop-price {
+          color: #62a7f7;
+          font-weight: 600;
+        }
+
+        button.buy-button {
+          background: #1877ff;
+          color: white;
+          border: none;
+          outline: none;
+          border-radius: 0.3rem;
+          cursor: pointer;
+          user-select: none;
+          padding: 0.35rem 0.8rem;
+          font-weight: 700;
+          font-size: 1rem;
+          transition: background-color 0.2s ease;
+        }
+
+        button.buy-button:disabled {
+          background-color: #3b4a6d;
+          cursor: not-allowed;
+        }
+
+        button.buy-button:hover:not(:disabled) {
+          background-color: #3ea0ff;
+        }
+
+        #clickButton {
+          background: none;
+          border: none;
+          outline: none;
+          padding: 0;
+          cursor: pointer;
+          width: 12rem;
+          aspect-ratio: 1 / 1;
+          position: relative;
+          z-index: 1;
+          min-width: 0;
+          min-height: 0;
+          display: block;
+          margin: 0 auto;
+        }
+
+        #earthSVG {
+          width: 100%;
+          height: 100%;
+          filter: drop-shadow(0 0 1rem #4bd5fa);
+          animation: spinEarth 8s linear infinite;
+          transition: filter 0.3s;
+          display: block;
+          user-select: none;
+          z-index: 2;
+        }
+
+        #clickButton:active #earthSVG {
+          filter: drop-shadow(0 0 2rem #30ffa6);
+        }
+
+        .earth-label {
+          margin-top: 1.5rem;
+          color: #6ad0f5;
+          font-size: 2rem;
+          letter-spacing: 0.1rem;
+          text-shadow: 0 0 0.5rem #167ac6;
+          font-weight: 700;
+          user-select: none;
+        }
+
+        /* ======= SMALLER ARROWS START ======= */
+        .arrow-container {
+          position: fixed;
+          top: 50%;
+          width: 2.5rem;
+          height: 2.5rem;
+          background: #0b3c89;
+          box-shadow: 0 0 0.4rem #295baf;
+          border-radius: 0.4rem;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          z-index: 20;
+          transform: translateY(-50%);
+          cursor: pointer;
+          user-select: none;
+          opacity: 1;
+          transition: opacity 0.4s ease;
+          pointer-events: auto;
+        }
+
+        .arrow-container.hidden {
+          opacity: 0;
+          pointer-events: none;
+        }
+
+        #leftArrowContainer {
+          left: 1rem;
+        }
+
+        #rightArrowContainer {
+          right: 1rem;
+        }
+
+        .nav-arrow {
+          width: 1.4rem;
+          height: 1.4rem;
+          filter: drop-shadow(0 0 0.1rem #0a1a2b);
+        }
+
+        .nav-arrow svg {
+          fill: #62a7f7;
+          width: 100%;
+          height: 100%;
+        }
+        /* ======= SMALLER ARROWS END ======= */
+
+        .stars {
+          position: fixed;
+          width: 100vw;
+          height: 100vh;
+          z-index: 0;
+          top: 0;
+          left: 0;
+        }
+
+        .float-plus {
+          position: absolute;
+          left: 50%;
+          top: 6%;
+          font-size: 1.6rem;
+          font-weight: bold;
+          color: #87ffd7;
+          text-shadow: 0 0 0.3rem #24e9ce, 0 0 0.8rem #1abc9c;
+          pointer-events: none;
+          z-index: 10;
+          opacity: 0.7;
+          animation: plusFlySmooth 1.3s cubic-bezier(.37,.3,.5,1) forwards;
+        }
+
+        /* Shop toggle tab button */
+        #shopToggleBtn {
+          position: fixed;
+          top: 1rem;
+          right: 1rem;
+          background-color: #1877ff;
+          color: white;
+          border: none;
+          outline: none;
+          border-radius: 0.4rem 0 .4rem 0;
+          font-weight: 700;
+          font-size: 1.2rem;
+          padding: 0.4rem 0.8rem;
+          cursor: pointer;
+          user-select: none;
+          z-index: 30;
+          transition: background-color 0.3s ease;
+        }
+        #shopToggleBtn:hover {
+          background-color: #3ea0ff;
+        }
+
+        #settingsDropdown {
+          position: fixed;
+          top: 3.5rem;
+          left: 6rem;
+          background-color: #111a2a;
+          box-shadow: 0 0 1rem #0a2e6c;
+          border-radius: 0.4rem;
+          padding: 0.5rem 1rem;
+          font-size: 1.1rem;
+          font-weight: 600;
+          color: #62a7f7;
+          display: none;
+          user-select: none;
+          z-index: 30;
+        }
+
+        #settingsDropdown button {
+          background: #1877ff;
+          border: none;
+          color: white;
+          font-weight: 700;
+          border-radius: 0.3rem;
+          cursor: pointer;
+          padding: 0.25rem 0.6rem;
+          margin: 0.2rem 0;
+          width: 100%;
+          text-align: center;
+          transition: background-color 0.2s ease;
+        }
+        #settingsDropdown button:hover {
+          background-color: #3ea0ff;
+        }
+
+        /* Custom scroll bar for webkit browsers */
+        .shop-section::-webkit-scrollbar {
+          width: 12px;
+        }
+        .shop-section::-webkit-scrollbar-track {
+          background: #0a2e6c;
+          border-radius: 6px;
+        }
+        .shop-section::-webkit-scrollbar-thumb {
+          background-color: #1877ff;
+          border-radius: 6px;
+          border: 3px solid #0a2e6c;
+          transition: background-color 0.3s ease;
+        }
+        .shop-section::-webkit-scrollbar-thumb:hover {
+          background-color: #3ea0ff;
+        }
+
+        /* Firefox scrollbar styling */
+        .shop-section {
+          scrollbar-width: thin;
+          scrollbar-color: #1877ff #0a2e6c;
+        }
+
+        @keyframes spinEarth {
+          0% { transform: rotate(0deg);}
+          100% { transform: rotate(360deg);}
+        }
+
+        @keyframes plusFlySmooth {
+          0% {
+            opacity: 0.7;
+            transform: translateX(-50%) translateY(0) scale(1.0);
+            filter: blur(0);
+          }
+          70% {
+            opacity: 1;
+            transform: translateX(-50%) translateY(-2rem) scale(1.08);
+            filter: blur(0);
+          }
+          100% {
+            opacity: 0;
+            transform: translateX(-50%) translateY(-3.2rem) scale(0.95);
+            filter: blur(0.25rem);
+          }
+        }
+    </style>
+</head>
+<body>
+
+<div id="topButtonsContainer">
+    <a href="../Index/index.html" id="homeBtn" aria-label="Home">Home</a>
+    <button id="settingsBtn" aria-haspopup="true" aria-expanded="false" aria-controls="settingsDropdown" aria-label="Settings">Settings</button>
+</div>
+
+<div class="dollars-counter" id="counter">Dollars: 0</div>
+<div class="dollars-per-second" id="dpsCounter">Dollars per second: 0</div>
+
+<div id="settingsDropdown" role="menu" aria-label="Settings Menu">
+    <button id="resetGameBtn" role="menuitem">Reset Game</button>
+</div>
+
+<button id="shopToggleBtn" aria-expanded="false" aria-controls="shopSection" aria-label="Toggle Shop">Shop</button>
+
+<canvas class="stars"></canvas>
+
+<div id="leftArrowContainer" class="arrow-container" tabindex="0" aria-label="Previous Planet" role="button">
+    <div id="leftArrow" class="nav-arrow">
+        <svg viewBox="0 0 24 24">
+            <path d="M15.41 7.41L14 6l-6 6 6 6 1.41-1.41L10.83 12z"/>
+        </svg>
+    </div>
+</div>
+
+<div id="rightArrowContainer" class="arrow-container" tabindex="0" aria-label="Next Planet" role="button">
+    <div id="rightArrow" class="nav-arrow">
+        <svg viewBox="0 0 24 24">
+            <path d="M8.59 16.59L13.17 12 8.59 7.41 10 6l6 6-6 6z"/>
+        </svg>
+    </div>
+</div>
+
+<div class="main-content centered-earth" id="mainContent">
+    <div class="earth-section">
+        <div style="position:relative;width:100%;display:flex;justify-content:center;align-items:center;">
+            <button id="clickButton" tabindex="0" aria-hidden="true" style="z-index:1;">
+                <svg id="earthSVG" viewBox="0 0 140 140" xmlns="http://www.w3.org/2000/svg" role="img">
+                    <circle cx="70" cy="70" r="68" fill="#2e85ff" stroke="#1a4c8b" stroke-width="2"/>
+                    <ellipse cx="56" cy="83" rx="26" ry="14" fill="#56c271" opacity="0.98"/>
+                    <ellipse cx="93" cy="59" rx="19" ry="10" fill="#70be75" opacity="0.87"/>
+                    <ellipse cx="74" cy="48" rx="11" ry="6.5" fill="#6dc567" opacity="0.92"/>
+                    <ellipse cx="100" cy="110" rx="13" ry="6" fill="#63aa6c" opacity="0.80"/>
+                    <ellipse cx="70" cy="18" rx="19" ry="7" fill="#f5f5fa" opacity="0.62"/>
+                    <ellipse cx="70" cy="123" rx="17" ry="6" fill="#f5f5fa" opacity="0.64"/>
+                    <ellipse cx="40" cy="45" rx="15" ry="6" fill="#bbeeff" opacity="0.45"/>
+                </svg>
+            </button>
+            <div id="plusContainer" style="position:absolute;top:0;left:0;width:100%;pointer-events:none;z-index:10;"></div>
+        </div>
+        <div class="earth-label">Earth</div>
+    </div>
+
+    <div class="shop-section shop-closed" tabindex="-1" id="shopSection" aria-hidden="true">
+        <div class="shop-label">Shop</div>
+    </div>
+</div>
+
+<script>
+    // Star background setup and animation
+    const canvas = document.querySelector('.stars');
+    const ctx = canvas.getContext('2d');
+    let stars = [];
+    const STAR_COUNT = 180;
+
+    function resizeCanvas() {
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+    }
+    window.addEventListener('resize', resizeCanvas);
+
+    function initStars() {
+      stars = [];
+      for (let i = 0; i < STAR_COUNT; i++) {
+        stars.push({
+          x: Math.random() * canvas.width,
+          y: Math.random() * canvas.height,
+          r: Math.random() * 1.2 + 0.1,
+          speed: 0.12 + Math.random() * 0.2
+        });
+      }
+    }
+
+    function drawStars() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      for (let star of stars) {
+        ctx.beginPath();
+        ctx.arc(star.x, star.y, star.r, 0, Math.PI * 2);
+        ctx.fillStyle = 'rgba(255,255,255,0.8)';
+        ctx.fill();
+      }
+    }
+
+    function updateStars() {
+      for (let star of stars) {
+        star.x += star.speed;
+        if (star.x > canvas.width + 2) {
+          star.x = -2;
+          star.y = Math.random() * canvas.height;
+        }
+      }
+    }
+
+    function animateStars() {
+      updateStars();
+      drawStars();
+      requestAnimationFrame(animateStars);
+    }
+
+    function startStars() {
+      resizeCanvas();
+      initStars();
+      animateStars();
+    }
+    window.addEventListener('resize', () => {
+      resizeCanvas();
+      initStars();
+    });
+    startStars();
+
+    // Game variables
+    let dollars = 0;
+    let dollarsPerSecond = 0;
+    let clickMultiplier = 1;
+
+    // DOM Elements
+    const counterElement = document.getElementById("counter");
+    const dpsElement = document.getElementById("dpsCounter");
+    const clickButton = document.getElementById("clickButton");
+    const plusContainer = document.getElementById("plusContainer");
+    const shopSection = document.getElementById("shopSection");
+    const shopToggleBtn = document.getElementById("shopToggleBtn");
+    const mainContent = document.getElementById("mainContent");
+    const settingsBtn = document.getElementById('settingsBtn');
+    const settingsDropdown = document.getElementById('settingsDropdown');
+    const resetGameBtn = document.getElementById('resetGameBtn');
+
+    // Shop items ordered by ascending base price
+    const shopItems = [
+      { name: 'Lazy Cash Machine', basePrice: 50, dps: 1, count: 0, desc: "+1 dollar per second" },
+      { name: 'Efficient Printer', basePrice: 300, dps: 3, count: 0, desc: "+3 dollars per second" },
+      { name: 'Squirrel Consultant', basePrice: 700, dps: 5, count: 0, desc: "+5 dollars per second" },
+      { name: 'Drone Delivery System', basePrice: 1500, dps: 10, count: 0, desc: "+10 dollars per second" },
+      { name: 'Coffee Infusion', basePrice: 1500, clickMult: 1.5, count: 0, desc: "Click value ×1.5" },
+      { name: 'Giant Hamster Wheel', basePrice: 3000, dps: 10, count: 0, desc: "+10 dollars per second" },
+      { name: "CEO's Signature Pen", basePrice: 3000, dps: 20, count: 0, desc: "+20 dollars per second" },
+      { name: "Space Elevator", basePrice: 5000, dps: 50, count: 0, desc: "+50 dollars per second" },
+      { name: "Internet Meme Rights", basePrice: 6000, dps: 70, count: 0, desc: "+70 dollars per second" },
+      { name: 'Fortune Cookie', basePrice: 8000, dps: 100, count: 0, desc: "+100 dollars per second" },
+      { name: 'Viral Dance Craze', basePrice: 8500, clickMult: 1.8, count: 0, desc: "Click value ×1.8" },
+      { name: 'Meme Generator', basePrice: 10000, clickMult: 3, count: 0, desc: "Click value ×3" },
+      { name: 'Click Booster 3000', basePrice: 12000, clickMult: 4, count: 0, desc: "Click value ×4" },
+      { name: 'Marketing Blitz', basePrice: 18000, dps: 150, count: 0, desc: "+150 dollars per second" },
+      { name: 'AI Accountant', basePrice: 25000, dps: 200, count: 0, desc: "+200 dollars per second" },
+      { name: 'Robotic Cashiers', basePrice: 50000, dps: 500, count: 0, desc: "+500 dollars per second" },
+      { name: 'Finish Civics Bookwork', basePrice: 60000, dps: 100, count: 0, desc: "+700 dollar per second" },
+      { name: 'Private Jet', basePrice: 100000, clickMult: 5, count: 0, desc: "Click value ×5" },
+      { name: 'Golden ATM', basePrice: 150000, dps: 1000, count: 0, desc: "+1,000 dollars per second" },
+      { name: 'Luxury Watch', basePrice: 200000, clickMult: 7, count: 0, desc: "Click value ×7" },
+      { name: 'CEO Shark Tank', basePrice: 500000, clickMult: 10, count: 0, desc: "Click value ×10" },
+      { name: 'Slaves', basePrice: 800000, clickMult: 15, count: 0, desc: "Click value ×15" },
+      { name: 'Cocaine Dealership', basePrice: 1000000, dps: 10000, count: 0, desc: "+10,000 dollars per second" }
+    ];
+
+    function getPrice(item) {
+      return Math.floor(item.basePrice * Math.pow(1.2, item.count));
+    }
+
+    // Save/load functions
+    function saveGame() {
+      const saveData = {
+        dollars,
+        dollarsPerSecond,
+        clickMultiplier,
+        shopItems: shopItems.map(({count}) => count)
+      };
+      localStorage.setItem('planetClickerSave', JSON.stringify(saveData));
+    }
+
+    function loadGame() {
+      const saved = localStorage.getItem('planetClickerSave');
+      if (saved) {
+        try {
+          const data = JSON.parse(saved);
+          if (data.dollars !== undefined) dollars = data.dollars;
+          if (data.dollarsPerSecond !== undefined) dollarsPerSecond = data.dollarsPerSecond;
+          if (data.clickMultiplier !== undefined) clickMultiplier = data.clickMultiplier;
+          if (data.shopItems && Array.isArray(data.shopItems)) {
+            data.shopItems.forEach((count, index) => {
+              if (shopItems[index]) {
+                shopItems[index].count = count;
+              }
+            });
+          }
+        } catch (e) {
+          console.warn("Failed to load saved game:", e);
+        }
+      }
+    }
+
+    // Create shop item elements dynamically
+    function renderShop() {
+      shopSection.innerHTML = '<div class="shop-label">Shop</div>';
+
+      shopItems.forEach((item, index) => {
+        const itemDiv = document.createElement('div');
+        itemDiv.className = 'shop-item';
+
+        const nameEl = document.createElement('div');
+        nameEl.className = 'shop-item-name';
+        nameEl.textContent = item.name;
+
+        const descEl = document.createElement('div');
+        descEl.className = 'shop-item-desc';
+        descEl.textContent = item.desc;
+
+        const footerEl = document.createElement('div');
+        footerEl.className = 'shop-item-footer';
+
+        const priceEl = document.createElement('div');
+        priceEl.className = 'shop-price';
+        priceEl.textContent = `Price: $${getPrice(item)}`;
+
+        const countEl = document.createElement('div');
+        countEl.style.color = '#aad8ff';
+        countEl.style.fontWeight = '600';
+        countEl.style.marginRight = '1rem';
+        countEl.textContent = `Bought: ${item.count}/30`;
+
+        const buyBtn = document.createElement('button');
+        buyBtn.className = 'buy-button';
+        buyBtn.textContent = 'Buy';
+        buyBtn.disabled = dollars < getPrice(item) || item.count >= 30;
+        buyBtn.addEventListener('click', () => buyItem(index));
+
+        footerEl.appendChild(countEl);
+        footerEl.appendChild(priceEl);
+        footerEl.appendChild(buyBtn);
+
+        itemDiv.appendChild(nameEl);
+        itemDiv.appendChild(descEl);
+        itemDiv.appendChild(footerEl);
+
+        shopSection.appendChild(itemDiv);
+      });
+    }
+
+    function buyItem(index) {
+      const item = shopItems[index];
+      const price = getPrice(item);
+
+      if (item.count >= 30) {
+        alert(`No more ${item.name}s can be bought!`);
+        return;
+      }
+      if (dollars < price) {
+        alert("Not enough dollars!");
+        return;
+      }
+
+      dollars -= price;
+      item.count++;
+
+      if (item.dps) {
+        dollarsPerSecond += item.dps;
+      }
+      if (item.clickMult) {
+        clickMultiplier *= item.clickMult;
+      }
+
+      updateDisplay();
+      renderShop();
+      saveGame();
+    }
+
+    function updateDisplay() {
+      counterElement.textContent = `Dollars: ${Math.floor(dollars)}`;
+      dpsElement.textContent = `Dollars per second: ${Math.floor(dollarsPerSecond)}`;
+      renderShop();
+    }
+
+    function showFloatingPlus(amount) {
+      const plusDiv = document.createElement('div');
+      plusDiv.className = 'float-plus';
+      plusDiv.textContent = `+${amount}`;
+      plusContainer.appendChild(plusDiv);
+      plusDiv.addEventListener('animationend', () => plusDiv.remove());
+    }
+
+    clickButton.addEventListener("click", () => {
+      const gain = 1 * clickMultiplier;
+      dollars += gain;
+      updateDisplay();
+      showFloatingPlus(gain);
+      saveGame();
+    });
+
+    // Passive income every second
+    setInterval(() => {
+      dollars += dollarsPerSecond;
+      updateDisplay();
+      saveGame();
+    }, 1000);
+
+    // Load saved game at start
+    loadGame();
+    updateDisplay();
+
+    // Arrow buttons and planet navigation logic
+    let currentPlanetIndex = 0;
+    const planets = ['Earth', 'Mars', 'Venus'];
+
+    const leftArrowContainer = document.getElementById('leftArrowContainer');
+    const rightArrowContainer = document.getElementById('rightArrowContainer');
+
+    function updateArrows() {
+      if (currentPlanetIndex === 0) {
+        leftArrowContainer.classList.add('hidden');
+      } else {
+        leftArrowContainer.classList.remove('hidden');
+      }
+
+      if (currentPlanetIndex === planets.length - 1) {
+        rightArrowContainer.classList.add('hidden');
+      } else {
+        rightArrowContainer.classList.remove('hidden');
+      }
+    }
+
+    leftArrowContainer.addEventListener('click', () => {
+      if (currentPlanetIndex > 0) {
+        currentPlanetIndex--;
+        updateArrows();
+        alert('Switched to ' + planets[currentPlanetIndex]);
+      }
+    });
+
+    rightArrowContainer.addEventListener('click', () => {
+      if (currentPlanetIndex < planets.length - 1) {
+        currentPlanetIndex++;
+        updateArrows();
+        alert('Switched to ' + planets[currentPlanetIndex]);
+      }
+    });
+
+    updateArrows();
+
+    // Shop toggle logic
+    let shopOpen = false;
+
+    function toggleShop() {
+      shopOpen = !shopOpen;
+      if (shopOpen) {
+        shopSection.classList.remove('shop-closed');
+        shopSection.setAttribute('aria-hidden', 'false');
+        shopToggleBtn.setAttribute('aria-expanded', 'true');
+        mainContent.classList.remove('centered-earth');
+      } else {
+        shopSection.classList.add('shop-closed');
+        shopSection.setAttribute('aria-hidden', 'true');
+        shopToggleBtn.setAttribute('aria-expanded', 'false');
+        mainContent.classList.add('centered-earth');
+      }
+    }
+
+    shopToggleBtn.addEventListener('click', toggleShop);
+
+    // Start with shop closed and Earth centered
+    mainContent.classList.add('centered-earth');
+    shopSection.classList.add('shop-closed');
+    shopSection.setAttribute('aria-hidden', 'true');
+    shopToggleBtn.setAttribute('aria-expanded', 'false');
+
+    // Settings menu toggle logic
+    settingsBtn.addEventListener('click', () => {
+      const isOpen = settingsDropdown.style.display === 'block';
+      if (isOpen) {
+        settingsDropdown.style.display = 'none';
+        settingsBtn.setAttribute('aria-expanded', 'false');
+      } else {
+        settingsDropdown.style.display = 'block';
+        settingsBtn.setAttribute('aria-expanded', 'true');
+      }
+    });
+
+    // Close settings dropdown if clicked outside
+    window.addEventListener('click', (e) => {
+      if (!settingsBtn.contains(e.target) && !settingsDropdown.contains(e.target)) {
+        settingsDropdown.style.display = 'none';
+        settingsBtn.setAttribute('aria-expanded', 'false');
+      }
+    });
+
+    // Reset game button functionality
+    resetGameBtn.addEventListener('click', () => {
+      if (confirm('Are you sure you want to reset the game? This will clear all progress.')) {
+        localStorage.removeItem('planetClickerSave');
+        location.reload();
+      }
+    });
+</script>
+
+</body>
+</html>
