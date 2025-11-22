@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>The game idk the name of</title>
+  <!--
+    Use the <style> tag to write CSS, which changes how things look.
+    The comments below will guide you!
+  -->
+  <style>
+    /* This puts the button in the top-left corner of the page */
+    #topButtonsContainer {
+      position: fixed;  /* Makes it stay visible on screen */
+      top: 1rem;        /* How far from the top (change "1rem" to something else if you want) */
+      left: 1rem;       /* How far from the left side */
+      z-index: 30;      /* Keeps it on top of other page items */
+      user-select: none;/* Makes it so users can't highlight the button text */
+    }
+
+    /*
+      This styles the Home button.
+      You can change the background-color and color properties to whatever you like!
+      Try "#28a745" for green, "#e83e8c" for pink, etc.
+    */
+
+    .home-btn {
+      background-color: #1877ff;   /* <-- This is the BUTTON BACKGROUND color */
+      color: white;                /* <-- This is the BUTTON TEXT color */
+      border: none;                /* Removes the default border outline */
+      border-radius: 0.4rem;       /* Rounds the corners a bit */
+      font-weight: bold;           /* Makes the text bold */
+      font-size: 1.2rem;           /* Size of the text */
+      padding: 0.4rem 1.2rem;      /* Space inside the button: Top/Bottom Left/Right */
+      cursor: pointer;             /* Mouse turns to a hand when over the button */
+      transition: background 0.2s; /* Makes the color change smoothly when hovering */
+      text-decoration: none;       /* No underline when used as a link */
+      box-shadow: 0 2px 8px rgba(24, 119, 255, 0.12); /* Drop shadow for a "raised" effect */
+      display: inline-block;       /* This lets padding and margin work nicely */
+    }
+    /* This changes the button color when you hover over it! */
+    .home-btn:hover {
+      background-color: #3ea0ff;   /* <-- HOVER BACKGROUND color (change if desired) */
+    }
+    /*
+      Want to use your own colors?
+      Replace "#1877ff" above with any hex color (e.g., "#28a745" is green)
+      Or use named colors (e.g., "red", "blue")!
+    */
+  </style>
+</head>
+<body>
+  <!--
+    This whole div is the button container.
+    It helps position the button at the top-left.
+  -->
+  <div id="topButtonsContainer">
+    <!--
+      This is the Home button itself.
+      The href attribute is where it will take you.
+      aria-label helps screen readers.
+    -->
+    <a href="../Index/index.html" class="home-btn" aria-label="Home">
+      Home
+    </a>
+  </div>
+
+</body>
+</html>
